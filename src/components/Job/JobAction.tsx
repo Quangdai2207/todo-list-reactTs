@@ -1,8 +1,15 @@
 import { MessageSquarePlus, Pencil, Trash2 } from "lucide-react";
-import type { Job } from "../../Models/Job";
+import type { Job, Priority, Status } from "../../Models/Job";
 import { JobRepository } from "../../repository/JobRepository";
 import type { Dispatch, SetStateAction } from "react";
 import type { Note } from "../../Models/Note";
+
+interface EditForm {
+    title: string;
+    status: Status;
+    priority: Priority;
+    dueDate: string;
+}
 
 interface Props {
   job: Job;
@@ -14,8 +21,8 @@ interface Props {
   setNoteJobId: Dispatch<SetStateAction<string>>;
   setNoteDraft: Dispatch<SetStateAction<string>>;
 
-  setEditJobId: Dispatch<SetStateAction<string>>;
-  setEditForm: Dispatch<SetStateAction<{}>>;
+  setEditJobId: React.Dispatch<React.SetStateAction<string | null>>;
+  setEditForm: Dispatch<SetStateAction<EditForm>>;
 }
 
 export const JobActions = ({

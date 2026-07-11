@@ -22,7 +22,7 @@ export const JobRepository = {
     return data;
   },
 
-  getJobById: (jobId: string): Job => {
+  getJobById: (jobId: string): Job | undefined => {
     return data.find((j) => j.id === jobId);
   },
 
@@ -48,12 +48,12 @@ export const JobRepository = {
       return 1;
   },
 
+
   remove: (jobId: string): void => {
     NoteRepository.removeNotesJOb(jobId);
-    var updateData = data.filter((j) => j.id !== jobId);
-    sessionStorage.removeItem("rodo-list");
-    sessionStorage.setItem("todo-list", JSON.stringify(updateData));
-  },
+    data = data.filter(j => j.id !== jobId);
+    sessionStorage.setItem("todo-list", JSON.stringify(data));
+},
 
   isExist: (jobId: string): boolean => {
     const job =  data.find(j => j.id === jobId);
