@@ -24,9 +24,12 @@ export const NoteRepository = {
   // Get Note list by JobId
   getNotesByJob: (jobId: string): Note[] => {
     const storage = sessionStorage.getItem("notes");
-    if (!storage) sessionStorage.setItem("notes", JSON.stringify([]));
+    if (!storage) {
+      sessionStorage.setItem("notes", JSON.stringify([]));
+      data = JSON.parse(storage) as Note[];
+    }
 
-    data = JSON.parse(storage);
+    data = JSON.parse(storage) as Note[];
     data = data.filter((n) => n.job === jobId);
 
     return data;
@@ -35,9 +38,12 @@ export const NoteRepository = {
   // Get list notes
   getNotes: (): Note[] => {
     const storage = sessionStorage.getItem("notes");
-    if (!storage) sessionStorage.setItem("notes", JSON.stringify([]));
+    if (!storage) {
+        sessionStorage.setItem("notes", JSON.stringify([]));
+        data = JSON.parse(storage) as Note[]
+    }
 
-    data = JSON.parse(storage);
+    data = JSON.parse(storage) as Note[];
     return data;
   },
 

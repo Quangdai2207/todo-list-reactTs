@@ -14,11 +14,10 @@ export const JobRepository = {
 
     if (!storage) {
       sessionStorage.setItem("todo-list", JSON.stringify([]));
-      data = JSON.parse(sessionStorage.getItem("todo-list")) as Job[];
-      return data;
+      data = JSON.parse(storage) as Job[];
     }
 
-    data = JSON.parse(sessionStorage.getItem("todo-list")) as Job[];
+    data = JSON.parse(storage) as Job[];
     return data;
   },
 

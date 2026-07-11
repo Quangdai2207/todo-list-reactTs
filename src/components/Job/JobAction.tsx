@@ -5,10 +5,10 @@ import type { Dispatch, SetStateAction } from "react";
 import type { Note } from "../../Models/Note";
 
 interface EditForm {
-    title: string;
-    status: Status;
-    priority: Priority;
-    dueDate: string;
+  title: string;
+  status: Status;
+  priority: Priority;
+  dueDate: string;
 }
 
 interface Props {
