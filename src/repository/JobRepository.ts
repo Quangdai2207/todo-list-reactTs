@@ -1,61 +1,63 @@
 import type { Job } from "../Models/Job";
 import { NoteRepository } from "./NoteRepository";
 
-var data: Job[] = [];
+let data: Job[] = [];
+
+const STORAGE_KEY = "todo-list";
 
 export const JobRepository = {
-  initStorage: () => {
-    var storage = sessionStorage.getItem("todo-list");
-    if (!storage) sessionStorage.setItem("todo-list", JSON.stringify([]));
+  initStorage: (): void => {
+    if (!sessionStorage.getItem(STORAGE_KEY)) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    }
   },
 
   getList: (): Job[] => {
-    var storage = sessionStorage.getItem("todo-list");
-
-    if (!storage) {
-      sessionStorage.setItem("todo-list", JSON.stringify([]));
-      data = JSON.parse(storage) as Job[];
-    }
+    const storage = sessionStorage.getItem(STORAGE_KEY) ?? "[]";
 
     data = JSON.parse(storage) as Job[];
+
     return data;
   },
 
   getJobById: (jobId: string): Job | undefined => {
-    return data.find((j) => j.id === jobId);
+    return data.find((job) => job.id === jobId);
   },
 
   save: (job: Job): number => {
-    const isExist = data.find(j => j.title.trim().toLowerCase() === job.title.trim().toLowerCase());
+    const exists = data.some(
+      (j) => j.title.trim().toLowerCase() === job.title.trim().toLowerCase()
+    );
 
-    if (isExist) return 0;
+    if (exists) return 0;
 
     data.push(job);
-    sessionStorage.setItem("todo-list", JSON.stringify(data));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
     return 1;
   },
-
 
   update: (job: Job): number => {
     const index = data.findIndex((j) => j.id === job.id);
 
-      if (index === -1) return 0;
+    if (index === -1) return 0;
 
-      data[index] = job;
-      sessionStorage.removeItem("todo-list");
-      sessionStorage.setItem("todo-list", JSON.stringify(data));
-      return 1;
+    data[index] = job;
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    return 1;
   },
-
 
   remove: (jobId: string): void => {
     NoteRepository.removeNotesJOb(jobId);
-    data = data.filter(j => j.id !== jobId);
-    sessionStorage.setItem("todo-list", JSON.stringify(data));
-},
+
+    data = data.filter((j) => j.id !== jobId);
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  },
 
   isExist: (jobId: string): boolean => {
-    const job =  data.find(j => j.id === jobId);
-    return job ? true : false;
-  }
+    return data.some((j) => j.id === jobId);
+  },
 };

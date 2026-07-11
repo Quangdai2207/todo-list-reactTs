@@ -1,81 +1,80 @@
 import type { Note } from "../Models/Note";
 import { JobRepository } from "./JobRepository";
 
-var data: Note[] = [];
+let data: Note[] = [];
+
+const STORAGE_KEY = "notes";
 
 export const NoteRepository = {
   // Init database
   initDatabase: (): void => {
-    const storage = sessionStorage.getItem("notes");
-    if (!storage) sessionStorage.setItem("notes", JSON.stringify([]));
+    if (!sessionStorage.getItem(STORAGE_KEY)) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    }
   },
 
-  // Add new Notes
+  // Add new Note
   save: (note: Note, jobId: string): number => {
-    const job = JobRepository.isExist(jobId);
-    if (!job) return 0;
+    if (!JobRepository.isExist(jobId)) return 0;
 
     data.push(note);
-    sessionStorage.removeItem("notes");
-    sessionStorage.setItem("notes", JSON.stringify(data));
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
     return 1;
   },
 
-  // Get Note list by JobId
+  // Get notes by Job Id
   getNotesByJob: (jobId: string): Note[] => {
-    const storage = sessionStorage.getItem("notes");
-    if (!storage) {
-      sessionStorage.setItem("notes", JSON.stringify([]));
-      data = JSON.parse(storage) as Note[];
-    }
+    const storage = sessionStorage.getItem(STORAGE_KEY) ?? "[]";
 
     data = JSON.parse(storage) as Note[];
-    data = data.filter((n) => n.job === jobId);
 
-    return data;
+    return data.filter((note) => note.job === jobId);
   },
 
-  // Get list notes
+  // Get all notes
   getNotes: (): Note[] => {
-    const storage = sessionStorage.getItem("notes");
-    if (!storage) {
-        sessionStorage.setItem("notes", JSON.stringify([]));
-        data = JSON.parse(storage) as Note[]
-    }
+    const storage = sessionStorage.getItem(STORAGE_KEY) ?? "[]";
 
     data = JSON.parse(storage) as Note[];
+
     return data;
   },
 
-  // Get note by Note Id
+  // Get note by Id
   getNoteById: (noteId: string): Note | undefined => {
     return data.find((note) => note.id === noteId);
   },
 
-  // Update Note
+  // Update note
   update: (note: Note): number => {
     const index = data.findIndex((n) => n.id === note.id);
+
     if (index === -1) return 0;
 
     data[index] = note;
-    sessionStorage.setItem("notes", JSON.stringify(data));
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
     return 1;
   },
 
   // Delete note
   remove: (noteId: string): void => {
     data = data.filter((n) => n.id !== noteId);
-    sessionStorage.setItem("notes", JSON.stringify(data));
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   },
 
-  // Delete Notes Job
-  removeNotesJOb: (jobId: string) => {
+  // Delete all notes of a Job
+  removeNotesJOb: (jobId: string): void => {
     data = data.filter((n) => n.job !== jobId);
-    sessionStorage.removeItem("notes");
-    sessionStorage.setItem("notes", JSON.stringify(data));
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   },
 
-  // Move note to job
+  // Move note to another Job
   moveBy: (jobId: string, note: Note): number => {
     const noteData = data.find((n) => n.id === note.id);
 
@@ -83,7 +82,7 @@ export const NoteRepository = {
 
     noteData.job = jobId;
 
-    sessionStorage.setItem("notes", JSON.stringify(data));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
     return 1;
   },

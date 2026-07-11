@@ -17,12 +17,12 @@ interface Props {
 
   setJobs: Dispatch<SetStateAction<Job[]>>;
   setNotes: Dispatch<SetStateAction<Note[]>>;
-
-  setNoteJobId: Dispatch<SetStateAction<string>>;
+  
   setNoteDraft: Dispatch<SetStateAction<string>>;
 
   setEditJobId: React.Dispatch<React.SetStateAction<string | null>>;
   setEditForm: Dispatch<SetStateAction<EditForm>>;
+  setNoteJobId: Dispatch<SetStateAction<string | null>>;
 }
 
 export const JobActions = ({
