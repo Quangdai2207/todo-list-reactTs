@@ -62,7 +62,6 @@ const List = () => {
   const [createCalendarView, setCreateCalendarView] = useState(new Date());
   const [editDateOpen, setEditDateOpen] = useState(false);
   const [editCalendarView, setEditCalendarView] = useState(new Date());
-  const [errMessage, setErrMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -93,10 +92,7 @@ const List = () => {
       dueDate: form.dueDate,
     };
 
-    var saveJob = JobRepository.save(newJob);
-    if (saveJob == 0)
-      setErrMessage(`Job ${newJob.title} đã có trong danh sách.`);
-    else setErrMessage(`Thêm mới Job ${newJob.title} thành công`);
+    JobRepository.save(newJob);
 
     setJobs(JobRepository.getList());
     setForm(() => emptyForm);
@@ -124,8 +120,7 @@ const List = () => {
       done: false,
     };
 
-    const saveNote = NoteRepository.save(newNote, noteJobId);
-    if (saveNote === 0) setErrMessage("Tạp chú thích không thành công.");
+    NoteRepository.save(newNote, noteJobId);
 
     setNotes(NoteRepository.getNotes);
     setNoteDraft("");
