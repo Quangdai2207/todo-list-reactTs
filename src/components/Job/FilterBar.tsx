@@ -8,19 +8,19 @@ import { Utilities as util } from "../../utils/FormatDate";
 import { CalendarIcon, RotateCcw } from "lucide-react";
 
 interface Filter {
-    status: Status | "all";
-    priority: Priority | "all";
-    dueDate: string;
-  }
-  
-  interface Props {
-    filters: Filter;
-    setFilters: React.Dispatch<React.SetStateAction<Filter>>;
-    resetFilters: () => void;
-  }
+  status: Status | "all";
+  priority: Priority | "all";
+  dueDate: string;
+}
+
+interface Props {
+  filters: Filter;
+  setFilters: React.Dispatch<React.SetStateAction<Filter>>;
+  resetFilters: () => void;
+}
 
 // ---- Reusable filter bar (used on all device layouts) ----
-export const FilterBar = ({filters, setFilters, resetFilters} : Props) => {
+export const FilterBar = ({ filters, setFilters, resetFilters }: Props) => {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarView, setCalendarView] = useState(new Date());
 

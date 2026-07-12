@@ -7,22 +7,20 @@ import { statusMeta } from "../../Models/meta/StatusMeta";
 import type { Dispatch, SetStateAction } from "react";
 
 export interface JobFormValues {
-    title: string;
-    status: Status;
-    priority: Priority;
-    dueDate: string;
-  }
-  
-  interface Props {
-    values: JobFormValues;
-    setValues: Dispatch<SetStateAction<JobFormValues>>;
-  
-    dateOpen: boolean;
-    setDateOpen: Dispatch<SetStateAction<boolean>>;
-  
-    dateView: Date;
-    setDateView: Dispatch<SetStateAction<Date>>;
-  }
+  title: string;
+  status: Status;
+  priority: Priority;
+  dueDate: string;
+}
+
+interface Props {
+  values: JobFormValues;
+  setValues: Dispatch<SetStateAction<JobFormValues>>;
+  dateOpen: boolean;
+  setDateOpen: Dispatch<SetStateAction<boolean>>;
+  dateView: Date;
+  setDateView: Dispatch<SetStateAction<Date>>;
+}
 
 export const JobFormFields = ({
   values,
@@ -42,7 +40,8 @@ export const JobFormFields = ({
         value={values.title}
         onChange={(e) => setValues((f) => ({ ...f, title: e.target.value }))}
         placeholder="VD: Thiết kế màn hình đăng nhập"
-        className="w-full rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-orange-400/40 focus:bg-white/[0.06] transition-colors"
+        // text-base (16px) trên mobile để trình duyệt không tự zoom khi focus input; thu về text-sm từ sm trở lên
+        className="w-full rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-base sm:text-sm text-white placeholder:text-white/25 outline-none focus:border-orange-400/40 focus:bg-white/[0.06] transition-colors"
       />
     </div>
 
@@ -56,7 +55,7 @@ export const JobFormFields = ({
           onChange={(e) =>
             setValues((f) => ({ ...f, status: e.target.value as Status }))
           }
-          className="w-full appearance-none rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-sm text-white outline-none focus:border-orange-400/40 focus:bg-white/[0.06] transition-colors"
+          className="w-full appearance-none rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-base sm:text-sm text-white outline-none focus:border-orange-400/40 focus:bg-white/[0.06] transition-colors"
         >
           {Object.entries(statusMeta).map(([key, m]) => (
             <option key={key} value={key} className="bg-[#15151f] text-white">
@@ -75,7 +74,7 @@ export const JobFormFields = ({
           onChange={(e) =>
             setValues((f) => ({ ...f, priority: e.target.value as Priority }))
           }
-          className="w-full appearance-none rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-sm text-white outline-none focus:border-orange-400/40 focus:bg-white/[0.06] transition-colors"
+          className="w-full appearance-none rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-base sm:text-sm text-white outline-none focus:border-orange-400/40 focus:bg-white/[0.06] transition-colors"
         >
           {Object.entries(priorityMeta).map(([key, m]) => (
             <option key={key} value={key} className="bg-[#15151f] text-white">
@@ -93,7 +92,7 @@ export const JobFormFields = ({
       <button
         type="button"
         onClick={() => setDateOpen((v) => !v)}
-        className="w-full flex items-center gap-2 rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-sm text-left outline-none hover:bg-white/[0.06] focus:border-orange-400/40 transition-colors"
+        className="w-full flex items-center gap-2 rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-base sm:text-sm text-left outline-none hover:bg-white/[0.06] focus:border-orange-400/40 transition-colors"
       >
         <CalendarIcon className="w-4 h-4 text-white/40 shrink-0" />
         <span className={values.dueDate ? "text-white/85" : "text-white/30"}>

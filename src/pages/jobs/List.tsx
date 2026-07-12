@@ -1,18 +1,14 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import {
   Plus,
-  Search,
-  ListFilter,
   Calendar as CalendarIcon,
   Pencil,
   X,
-  ListChecks,
   MessageSquarePlus,
   Home,
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-
 import type { Job, Priority, Status } from "../../Models/Job";
 import type { Note } from "../../Models/Note";
 import { NoteRepository } from "../../repository/NoteRepository";
@@ -26,6 +22,7 @@ import { FilterBar } from "../../components/Job/FilterBar";
 import { JobNotesPanel } from "../../components/Note/JobNotesPanel";
 import { JobActions } from "../../components/Job/JobAction";
 import { JobFormFields } from "./Create";
+import { Header } from "../../components/Job/Layout/Header";
 
 const listJob: Job[] = JobRepository.getList();
 const listNote: Note[] = NoteRepository.getNotes();
@@ -44,6 +41,10 @@ const emptyFilters = {
 };
 
 const List = () => {
+  useEffect(() => {
+    document.title = "Todo-list";
+  }, []);
+
   const [jobs, setJobs] = useState<Job[]>(listJob);
   const [notes, setNotes] = useState<Note[]>(listNote);
 
@@ -72,7 +73,6 @@ const List = () => {
     const matchesPriority =
       filters.priority === "all" || j.priority === filters.priority;
     const matchesDate = !filters.dueDate || j.dueDate === filters.dueDate;
-
     return matchesTitle && matchesStatus && matchesPriority && matchesDate;
   });
 
@@ -81,6 +81,7 @@ const List = () => {
     (filters.priority !== "all" ? 1 : 0) +
     (filters.dueDate ? 1 : 0);
 
+  // Add New Job
   const handleAddJob = () => {
     if (!form.title.trim()) return;
 
@@ -106,6 +107,7 @@ const List = () => {
 
   // Close Modal add Note for Job
   const closeNoteModal = () => {
+    (document.activeElement as HTMLElement)?.blur();
     setNoteJobId(null);
     setNoteDraft("");
   };
@@ -142,10 +144,12 @@ const List = () => {
   };
 
   const closeEditModal = () => {
+    (document.activeElement as HTMLElement)?.blur();
     setEditJobId(null);
     setEditForm(emptyForm);
   };
 
+  // Save Edit Job
   const handleSaveEdit = () => {
     if (!editForm.title.trim() || !editJobId) return;
 
@@ -190,73 +194,18 @@ const List = () => {
         <GreetingClock />
 
         {/* Header */}
-        <div className="flex flex-col gap-4 mb-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/20 to-fuchsia-600/20 border border-white/10 flex items-center justify-center shrink-0">
-              <ListChecks
-                className="w-5 h-5 text-orange-400"
-                strokeWidth={1.75}
-              />
-            </div>
-            <div>
-              <h1 className="text-lg sm:text-xl font-semibold text-white tracking-tight">
-                Danh sách công việc
-              </h1>
-              <p className="text-xs sm:text-sm text-white/35">
-                {filteredJobs.length} công việc
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="relative flex-1 sm:flex-none sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Tìm theo tiêu đề..."
-                className="w-full rounded-lg bg-white/[0.04] border border-white/10 pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-orange-400/40 focus:bg-white/[0.06] transition-colors"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => setFilterOpen((v) => !v)}
-              className={`shrink-0 rounded-lg border p-2.5 transition-colors ${
-                filterOpen || activeFilterCount > 0
-                  ? "border-orange-400/40 bg-orange-400/10"
-                  : "border-white/10 bg-white/[0.04] hover:bg-white/[0.07]"
-              }`}
-              aria-label="Lọc"
-            >
-              <ListFilter
-                className={`w-4 h-4 ${
-                  filterOpen || activeFilterCount > 0
-                    ? "text-orange-300"
-                    : "text-white/60"
-                }`}
-              />
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileFormOpen(true)}
-              className="hidden sm:inline-flex lg:hidden shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2.5 font-medium text-sm text-white bg-gradient-to-r from-orange-500 to-fuchsia-600 hover:brightness-110 active:scale-[0.98] transition-all"
-            >
-              <Plus className="w-4 h-4" strokeWidth={2} />
-              <span className="hidden sm:inline">Tạo mới</span>
-            </button>
-          </div>
-          {errMessage && <p className="">{errMessage}</p>}
-        </div>
-
-        {filterOpen && (
-          <FilterBar
-            filters={filters}
-            setFilters={setFilters}
-            resetFilters={resetFilters}
-          />
-        )}
-
+        <Header
+          filteredJobs={filteredJobs}
+          search={search}
+          setSearch={setSearch}
+          filterOpen={filterOpen}
+          setFilterOpen={setFilterOpen}
+          activeFilterCount={activeFilterCount}
+          setMobileFormOpen={setMobileFormOpen}
+          filters={filters}
+          setFilters={setFilters}
+          resetFilters={resetFilters}
+        />
         <div className="lg:grid lg:grid-cols-[1fr_340px] lg:gap-6 lg:items-start">
           <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden flex flex-col">
             {/* Job list scrolls within its own container — the page itself doesn't scroll with it */}
@@ -494,17 +443,29 @@ const List = () => {
         <Plus className="w-6 h-6" strokeWidth={2.25} />
       </button>
 
-      {/* Create job modal (mobile/tablet) */}
+      {/* Create job modal (mobile/tablet) — centered on screen, same as the note modal, instead of a bottom sheet */}
       {mobileFormOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm px-0 sm:px-4">
-          <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-white/10 bg-[#15151f] p-5 sm:p-6 max-h-[90vh] overflow-y-auto">
+        <div
+          className="lg:hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+          onClick={() => {
+            (document.activeElement as HTMLElement)?.blur();
+            setMobileFormOpen(false);
+          }}
+        >
+          <div
+            className="w-full sm:max-w-md rounded-2xl border border-white/10 bg-[#15151f] p-5 sm:p-6 max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-medium text-white/90">
                 Tạo công việc mới
               </h2>
               <button
                 type="button"
-                onClick={() => setMobileFormOpen(false)}
+                onClick={() => {
+                  (document.activeElement as HTMLElement)?.blur();
+                  setMobileFormOpen(false);
+                }}
                 className="p-1.5 rounded-md hover:bg-white/10 transition-colors"
                 aria-label="Đóng"
               >
@@ -531,10 +492,16 @@ const List = () => {
         </div>
       )}
 
-      {/* Edit job modal (all devices) */}
+      {/* Edit job modal (all devices) — centered on screen, same as the note modal, instead of a bottom sheet */}
       {editJobId && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm px-0 sm:px-4">
-          <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-white/10 bg-[#15151f] p-5 sm:p-6 max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+          onClick={closeEditModal}
+        >
+          <div
+            className="w-full sm:max-w-md rounded-2xl border border-white/10 bg-[#15151f] p-5 sm:p-6 max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-medium text-white/90">
                 Chỉnh sửa công việc
@@ -570,8 +537,14 @@ const List = () => {
 
       {/* Add-note popup — purely for creating a new note. Deleting/toggling notes now happens inline in the job's record. */}
       {noteJob && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#15151f] p-5 sm:p-6">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+          onClick={closeNoteModal}
+        >
+          <div
+            className="w-full sm:max-w-md rounded-2xl border border-white/10 bg-[#15151f] p-5 sm:p-6 max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h2 className="text-base font-medium text-white/90">
@@ -600,7 +573,8 @@ const List = () => {
                 onChange={(e) => setNoteDraft(e.target.value)}
                 placeholder="Nhập nội dung ghi chú..."
                 rows={3}
-                className="w-full resize-none rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-orange-400/40 focus:bg-white/[0.06] transition-colors"
+                // text-base (16px) trên mobile để trình duyệt không tự zoom khi focus, thu về text-sm từ sm trở lên
+                className="w-full resize-none rounded-lg bg-white/[0.04] border border-white/10 px-3.5 py-2.5 text-base sm:text-sm text-white placeholder:text-white/25 outline-none focus:border-orange-400/40 focus:bg-white/[0.06] transition-colors"
               />
             </div>
 

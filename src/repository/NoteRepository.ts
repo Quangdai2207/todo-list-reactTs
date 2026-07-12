@@ -86,4 +86,16 @@ export const NoteRepository = {
 
     return 1;
   },
+
+  changeStatus: (noteId: string): void => {
+    const index = data.findIndex((n) => n.id === noteId);
+
+    if (index === -1) return;
+
+    data[index].done = true;
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    return;
+  },
 };
